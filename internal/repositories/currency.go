@@ -60,7 +60,7 @@ func (r *DateRepository) GetExchange(date map[string]time.Time) ([]Exchange, err
 	}
 
 	query := r.db.Model(&m.Currency{})
-	query = query.Select(selectField).Where("date between ? and ?", start_value, end_value)
+	query = query.Select(selectField).Where("date between ? and ?", start_value, end_value).Order("date desc")
 
 	var exchange []Exchange
 	if result := query.Find(&exchange); result.Error != nil {
