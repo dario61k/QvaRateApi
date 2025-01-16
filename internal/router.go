@@ -15,6 +15,13 @@ func SetupRoutes() *gin.Engine {
 
 	api := r.Group("/api")
 
+	api.GET("/ping", func(c *gin.Context) { // health check
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+
 	api.GET("/get-currency/:startdate/:enddate", middleware.RateLimit(6, time.Minute*1), h.GetCurrency)
 	api.GET("/get-excel/:startdate/:enddate", middleware.RateLimit(1, time.Minute*1), h.GetExcel)
 
