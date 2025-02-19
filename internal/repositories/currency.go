@@ -39,7 +39,6 @@ type Exchange struct {
 	Usd  float64   `json:"usd"`
 	Eur  float64   `json:"eur"`
 	Mlc  float64   `json:"mlc"`
-	Cad  float64   `json:"cad"`
 }
 
 func (r *DateRepository) GetExchange(date map[string]time.Time) ([]Exchange, error) {
@@ -56,7 +55,6 @@ func (r *DateRepository) GetExchange(date map[string]time.Time) ([]Exchange, err
 		"usd",
 		"eur",
 		"mlc",
-		"cad",
 	}
 
 	query := r.db.Model(&m.Currency{})

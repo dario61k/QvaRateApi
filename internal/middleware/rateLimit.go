@@ -9,46 +9,67 @@ import (
 )
 
 type requestInfo struct {
-	count    int
-	lastSeen time.Time
+	count       int
+	lastSeen    time.Time
+	isBlocked   bool
+	blockExpiry time.Time
 }
 
 var requestCount = make(map[string]*requestInfo)
 var mutex sync.Mutex
 
-func RateLimit(limit int, duration time.Duration) gin.HandlerFunc {
+func RateLimit(limit int, duration, blockDuration time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		clientIp := c.ClientIP()
+		clientIP := c.ClientIP()
 
 		mutex.Lock()
+		info, exists := requestCount[clientIP]
 
-		info, exist := requestCount[clientIp]
-		if !exist {
-			requestCount[clientIp] = &requestInfo{
+		if !exists {
+			requestCount[clientIP] = &requestInfo{
 				count:    1,
 				lastSeen: time.Now(),
 			}
 		} else {
-			if time.Since(info.lastSeen) > duration {
-				info.count = 1
-				info.lastSeen = time.Now()
+
+			if info.isBlocked {
+				if time.Now().After(info.blockExpiry) {
+
+					info.isBlocked = false
+					info.count = 1
+					info.lastSeen = time.Now()
+				} else {
+
+					c.JSON(http.StatusTooManyRequests, gin.H{
+						"error": "Too Many Requests - You are temporarily blocked",
+					})
+					mutex.Unlock()
+					c.Abort()
+					return
+				}
 			} else {
-				info.count++
+
+				if time.Since(info.lastSeen) > duration {
+					info.count = 1
+					info.lastSeen = time.Now()
+				} else {
+					info.count++
+				}
+
+				if info.count > limit {
+					info.isBlocked = true
+					info.blockExpiry = time.Now().Add(blockDuration)
+					c.JSON(http.StatusTooManyRequests, gin.H{
+						"error": "Too Many Requests - You are temporarily blocked",
+					})
+					mutex.Unlock()
+					c.Abort()
+					return
+				}
 			}
 		}
 
-		if requestCount[clientIp].count > limit {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"error": "Too Many Requests",
-			})
-			c.Abort()
-			mutex.Unlock()
-			return
-		}
-
 		mutex.Unlock()
-
 		c.Next()
 	}
 }

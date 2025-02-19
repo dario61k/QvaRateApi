@@ -43,10 +43,10 @@ func GetExcel(c *gin.Context) {
 	}
 
 	var data [][]interface{}
-	data = append(data, []interface{}{"Fecha", "USD", "EUR", "MLC", "CAD"})
+	data = append(data, []interface{}{"Fecha", "USD", "EUR", "MLC"})
 
 	for _, r := range result {
-		data = append(data, []interface{}{r.Date, r.Usd, r.Eur, r.Mlc, r.Cad})
+		data = append(data, []interface{}{r.Date, r.Usd, r.Eur, r.Mlc})
 	}
 
 	excelFile, err := utils.CreateExcel(data)

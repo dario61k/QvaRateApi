@@ -19,7 +19,7 @@ type Data struct {
 
 func GetData() {
 
-	currency := []string{"USD", "ECU", "MLC", "CAD"}
+	currency := []string{"USD", "ECU", "MLC"}
 	var newData models.Currency
 
 	for idx, c := range currency {
@@ -53,8 +53,6 @@ func GetData() {
 				newData.Eur = data[0].Median
 			case "MLC":
 				newData.Mlc = data[0].Median
-			case "CAD":
-				newData.Cad = data[0].Median
 			}
 		}
 	}

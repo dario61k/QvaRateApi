@@ -7,5 +7,4 @@ type Currency struct {
 	Usd  float64   `gorm:"type:decimal(10,2);not null"`
 	Eur  float64   `gorm:"type:decimal(10,2);not null"`
 	Mlc  float64   `gorm:"type:decimal(10,2);not null"`
-	Cad  float64   `gorm:"type:decimal(10,2);not null"`
 }
