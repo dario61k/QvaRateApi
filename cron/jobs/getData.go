@@ -9,6 +9,7 @@ import (
 	"os"
 	"qvarate_api/internal/models"
 	"qvarate_api/internal/repositories"
+	"sync"
 	"time"
 )
 
@@ -26,18 +27,18 @@ func GetData() {
 
 		resp, err := http.Get(fmt.Sprintf(os.Getenv("DATA_API"), c)) // variable de entorno
 		if err != nil {
-			log.Fatal("error getting exchange rates", err)
+			log.Println("error getting exchange rates", err)
 		}
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal("error reading data", err)
+			log.Println("error reading data", err)
 		}
 
 		var data []Data
 		if err := json.Unmarshal(body, &data); err != nil {
-			log.Fatal("error unmarshaling data", err)
+			log.Println("error unmarshaling data", err)
 		}
 
 		if len(data) == 1 {
@@ -58,6 +59,69 @@ func GetData() {
 	}
 
 	if err := repositories.NewDateRepository().NewCurrency(newData); err != nil {
-		log.Println("error saving data", err)	
+		log.Println("error saving data", err)
+	}
+}
+
+func GetDataV2() {
+
+	currency := []string{"USD", "ECU", "MLC"}
+	var curr models.Currency
+	var m sync.Mutex
+	var mw sync.WaitGroup
+
+	for _, c := range currency {
+
+		mw.Add(1)
+		go func(c string) {
+
+			defer mw.Done()
+			resp, err := http.Get(fmt.Sprintf(os.Getenv("DATA_API"), c))
+			if err != nil {
+				log.Println("error getting exchange rates", err, time.Now())
+			}
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				log.Println("error reading data", err, time.Now())
+			}
+
+			var data []Data
+			if err := json.Unmarshal(body, &data); err != nil {
+				log.Println("error unmarshaling data", err, time.Now())
+			}
+
+			var sdata Data
+			if len(data) > 0 {
+				sdata = data[0]
+			} else {
+				log.Println("error getting data", time.Now())
+				return
+			}
+
+			m.Lock()
+			
+			if c == "USD" {
+				curr.Date, _ = time.Parse("2006-01-02", sdata.ID)
+			}
+			switch c {
+			case "USD":
+				curr.Usd = sdata.Median
+			case "ECU":
+				curr.Eur = sdata.Median
+			case "MLC":
+				curr.Mlc = sdata.Median
+			}
+
+			m.Unlock()
+
+		}(c)
+	}
+
+	mw.Wait()
+
+	if err := repositories.NewDateRepository().NewCurrency(curr); err != nil {
+		log.Println("error saving data", err)
 	}
 }

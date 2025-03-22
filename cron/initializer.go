@@ -10,7 +10,7 @@ import (
 func SetupCron() {
 	c := cron.New()
 
-	c.AddFunc(os.Getenv("CRON_EXECUTION"), jobs.GetData)
+	c.AddFunc(os.Getenv("CRON_EXECUTION"), jobs.GetDataV2)
 
 	c.Start()
 }
