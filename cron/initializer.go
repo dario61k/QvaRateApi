@@ -13,4 +13,4 @@ func SetupCron() {
 	c.AddFunc(os.Getenv("CRON_EXECUTION"), jobs.GetDataV2)
 
 	c.Start()
-}
+}																    

@@ -23,6 +23,8 @@ func GetDB() *gorm.DB {
 		if err != nil {
 			log.Fatal("Database conection failed", err)
 		}
+
+		log.Println(dsn)
 	})
 
 	return db
