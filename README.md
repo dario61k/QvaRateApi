@@ -27,13 +27,13 @@ GET https://qvarateapi.onrender.com/api/get-currency/today
 
 ```json
 {
-	"result":
-		{
-			"date":"2025-07-12T00:00:00Z",
-			"usd":386,
-			"eur":430,
-			"mlc":235
-		}
+    "result":
+        {
+            "date":"2025-07-12T00:00:00Z",
+  	    "usd":386,
+	    "eur":430,
+	    "mlc":235
+        }
 }
 ```
 
