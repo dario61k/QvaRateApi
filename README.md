@@ -6,7 +6,40 @@ QvaRate API es un servicio que proporciona la tasa de cambio del Peso Cubano (CU
 
 ## Endpoints
 
-### 1. Obtener tasas de cambio en un rango de fechas
+### 1. Obtener última tasa de cambio registrada
+
+**URL:**
+
+```
+GET https://qvarateapi.onrender.com/api/get-currency/today
+```
+
+**Descripción:**  
+Este endpoint devuelve la última tasa de cambio registrada del CUP para USD, EUR y MLC.
+
+**Ejemplo de solicitud:**
+
+```
+GET https://qvarateapi.onrender.com/api/get-currency/today
+```
+
+**Ejemplo de respuesta:**
+
+```json
+{
+	"result":
+		{
+			"date":"2025-07-12T00:00:00Z",
+			"usd":386,
+			"eur":430,
+			"mlc":235
+		}
+}
+```
+
+---
+
+### 2. Obtener tasas de cambio en un rango de fechas
 
 **URL:**
 
@@ -57,7 +90,7 @@ GET https://qvarateapi.onrender.com/api/get-currency/2025-02-17/2025-02-19
 
 ---
 
-### 2. Exportar datos en formato Excel
+### 3. Exportar datos en formato Excel
 
 **URL:**
 

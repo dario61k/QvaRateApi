@@ -67,3 +67,24 @@ func (r *DateRepository) GetExchange(date map[string]time.Time) ([]Exchange, err
 
 	return exchange, nil
 }
+
+
+func (r *DateRepository) GetLastExchange() (Exchange, error) {
+
+	selectField := []string{
+		"date",
+		"usd",
+		"eur",
+		"mlc",
+	}
+
+	query := r.db.Model(&m.Currency{})
+	query = query.Select(selectField).Order("date DESC").Limit(1)
+
+	var exchange Exchange
+	if result := query.Find(&exchange); result.Error != nil {
+		return Exchange{}, result.Error
+	}
+
+	return exchange, nil
+}
